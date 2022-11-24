@@ -26,13 +26,39 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 async function run() {
+
+    //collections start
     const categoriesCollections = client.db("puranClothes").collection("categories")
+    const mensCollections = client.db("puranClothes").collection("menClothes")
+    const womensCollections = client.db("puranClothes").collection("womenClothes")
+    const childsCollections = client.db("puranClothes").collection("childClothes")
 
+    // collections end 
 
+    //find all categories
     app.get('/categories', async (req, res) => {
         const query = {}
         const result = await categoriesCollections.find(query).toArray()
         res.send(result)
+
+    })
+
+    //find specific category
+    app.get('/category/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = {}
+
+        if (id == 1) {
+            const result = await mensCollections.find(query).toArray()
+            res.send(result)
+        } else if (id == 2) {
+            const result = await womensCollections.find(query).toArray()
+            res.send(result)
+        } else if (id == 3) {
+            const result = await childsCollections.find(query).toArray()
+            res.send(result)
+        }
+
 
     })
 }
