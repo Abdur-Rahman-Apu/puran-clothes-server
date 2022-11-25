@@ -63,13 +63,50 @@ async function run() {
 
     })
 
-    //stored users
+    //stored users in the databage
     app.post('/users', async (req, res) => {
         const data = req.body;
         console.log(data);
         const result = await usersCollections.insertOne(data)
         res.send(result)
     })
+
+    //check users type to log in
+    app.get('/users', async (req, res) => {
+        const email = req.query.email;
+        const role = req.query.role;
+        const users = await usersCollections.find({}).toArray()
+
+        const search = users.find(user => user.email === email)
+        console.log("Search value", search);
+        console.log("compare", search.role == role);
+
+        if (search.role == role) {
+            res.send({ isFound: 'Yes' })
+        } else {
+            res.send({ isFound: 'No' })
+        }
+    })
+
+    //check role
+    app.get('/role', async (req, res) => {
+        const email = req.query.email;
+        console.log(email);
+        const allusers = await usersCollections.find({}).toArray()
+        const search = allusers.find(user => user.email == email)
+        if (search) {
+            const admin = search.isAdmin;
+            const userType = search.role;
+            if (admin) {
+                res.send({ isAdmin: 1, role: userType })
+            } else {
+
+                res.send({ isAdmin: 0, role: userType })
+            }
+        }
+    })
+
+
 }
 run().catch(error => console.log(error))
 
