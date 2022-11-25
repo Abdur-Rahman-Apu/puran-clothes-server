@@ -243,6 +243,41 @@ async function run() {
     })
 
 
+    //get all advertised products
+    app.get('/allAdvertiseProducts', async (req, res) => {
+        const query = { advertise: 1 }
+
+        const menData = await mensCollections.find(query).toArray()
+        const womenData = await womensCollections.find(query).toArray()
+        const childData = await childsCollections.find(query).toArray()
+
+        const allData = [...menData, ...womenData, ...childData]
+
+        res.send(allData)
+    })
+
+    //update verifyStatus
+    app.patch('/verifyStatus/:id', async (req, res) => {
+        const id = req.params.id;
+        console.log("update advertise", id);
+
+
+        const filter = { _id: ObjectId(id) }
+
+        const updateDoc = {
+            $set: {
+                verified: 1
+            },
+        };
+
+        //check 
+
+        const result = await usersCollections.updateOne(filter, updateDoc)
+
+        res.send(result)
+    })
+
+
 }
 run().catch(error => console.log(error))
 
