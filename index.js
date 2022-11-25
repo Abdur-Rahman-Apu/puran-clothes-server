@@ -32,6 +32,7 @@ async function run() {
     const mensCollections = client.db("puranClothes").collection("menClothes")
     const womensCollections = client.db("puranClothes").collection("womenClothes")
     const childsCollections = client.db("puranClothes").collection("childClothes")
+    const usersCollections = client.db("puranClothes").collection("users")
 
     // collections end 
 
@@ -60,6 +61,14 @@ async function run() {
         }
 
 
+    })
+
+    //stored users
+    app.post('/users', async (req, res) => {
+        const data = req.body;
+        console.log(data);
+        const result = await usersCollections.insertOne(data)
+        res.send(result)
     })
 }
 run().catch(error => console.log(error))
