@@ -106,6 +106,21 @@ async function run() {
         }
     })
 
+    //all buyers
+    app.get('/allBuyers', async (req, res) => {
+        const allusers = await usersCollections.find({}).toArray()
+
+        const buyers = allusers.filter(user => user.role === 'User' && !user.isAdmin)
+        res.send(buyers)
+    })
+
+    //all sellers
+    app.get('/allSellers', async (req, res) => {
+        const allusers = await usersCollections.find({}).toArray()
+
+        const sellers = allusers.filter(user => user.role === 'Seller' && !user.isAdmin)
+        res.send(sellers)
+    })
 
 }
 run().catch(error => console.log(error))
