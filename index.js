@@ -98,6 +98,11 @@ async function run() {
         }
     })
 
+    //all users
+    app.get('/allUsers', async (req, res) => {
+        res.send(await usersCollections.find({}).toArray())
+    })
+
     //check role
     app.get('/role', async (req, res) => {
         const email = req.query.email;
