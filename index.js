@@ -71,6 +71,17 @@ async function run() {
         res.send(result)
     })
 
+    //get all  users
+    app.patch('/allusers/:id', async (req, res) => {
+        const id = req.params.id;
+        console.log(id);
+        const query = { _id: ObjectId(id) }
+        console.log(query);
+        const result = await usersCollections.deleteOne(query);
+        res.send(result)
+
+    })
+
     //check users type to log in
     app.get('/users', async (req, res) => {
         const email = req.query.email;
