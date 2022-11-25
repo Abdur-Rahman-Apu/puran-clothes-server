@@ -71,7 +71,7 @@ async function run() {
         res.send(result)
     })
 
-    //get all  users
+    //delete a  users
     app.delete('/allusers/:id', async (req, res) => {
         const id = req.params.id;
         console.log(id);
@@ -193,7 +193,7 @@ async function run() {
 
         const query = { _id: ObjectId(id) }
 
-        //check in mens
+        //check 
         if (await mensCollections.findOne(query)) {
 
             result = await mensCollections.deleteOne(query)
@@ -205,6 +205,38 @@ async function run() {
         } else if (await childsCollections.findOne(query)) {
 
             result = await childsCollections.deleteOne(query)
+
+        }
+        res.send(result)
+    })
+
+
+    //update advertise value
+    app.patch('/updateAdvertise/:id', async (req, res) => {
+        const id = req.params.id;
+        console.log("update advertise", id);
+
+        let result;
+        const filter = { _id: ObjectId(id) }
+
+        const updateDoc = {
+            $set: {
+                advertise: 1
+            },
+        };
+
+        //check 
+        if (await mensCollections.findOne(filter)) {
+
+            result = await mensCollections.updateOne(filter, updateDoc)
+
+        } else if (await womensCollections.findOne(filter)) {
+
+            result = await womensCollections.updateOne(filter, updateDoc)
+
+        } else if (await childsCollections.findOne(filter)) {
+
+            result = await childsCollections.updateOne(filter, updateDoc)
 
         }
         res.send(result)
