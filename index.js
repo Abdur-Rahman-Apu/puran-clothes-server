@@ -72,14 +72,13 @@ async function run() {
     })
 
     //get all  users
-    app.patch('/allusers/:id', async (req, res) => {
+    app.delete('/allusers/:id', async (req, res) => {
         const id = req.params.id;
         console.log(id);
         const query = { _id: ObjectId(id) }
         console.log(query);
         const result = await usersCollections.deleteOne(query);
         res.send(result)
-
     })
 
     //check users type to log in
@@ -137,7 +136,7 @@ async function run() {
     //seller
     //add product
 
-    app.post('/addproduct', async (req, res) => {
+    app.post('/addProduct', async (req, res) => {
         const product = req.body;
         console.log(product);
         let result;
@@ -157,6 +156,60 @@ async function run() {
 
         res.send(result)
     })
+
+
+
+
+    //find specific product of the seller
+    app.get('/myproduct', async (req, res) => {
+        const email = req.query.email;
+
+        let myProducts = []
+
+        //mens
+        const menProduct = await mensCollections.find({}).toArray()
+        const myMenProduct = menProduct.filter(product => product.sellerEmail == email)
+
+        //womens
+        const womenProduct = await womensCollections.find({}).toArray()
+        const myWomenProduct = womenProduct.filter(product => product.sellerEmail == email)
+
+        //child
+        const childProduct = await childsCollections.find({}).toArray()
+        const myChildProduct = childProduct.filter(product => product.sellerEmail == email)
+
+
+        //combined all
+        myProducts = [...menProduct, ...womenProduct, ...childProduct]
+        res.send(myProducts)
+    })
+
+
+    //delete sellers product
+    app.delete('/deleteProducts/:id', async (req, res) => {
+        const id = req.params.id;
+        console.log("delete my product", id);
+        let result;
+
+        const query = { _id: ObjectId(id) }
+
+        //check in mens
+        if (await mensCollections.findOne(query)) {
+
+            result = await mensCollections.deleteOne(query)
+
+        } else if (await womensCollections.findOne(query)) {
+
+            result = await womensCollections.deleteOne(query)
+
+        } else if (await childsCollections.findOne(query)) {
+
+            result = await childsCollections.deleteOne(query)
+
+        }
+        res.send(result)
+    })
+
 
 }
 run().catch(error => console.log(error))
