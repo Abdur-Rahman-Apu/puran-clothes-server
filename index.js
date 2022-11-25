@@ -133,6 +133,31 @@ async function run() {
         res.send(sellers)
     })
 
+
+    //seller
+    //add product
+
+    app.post('/addproduct', async (req, res) => {
+        const product = req.body;
+        console.log(product);
+        let result;
+        if (product.categoryId == 1) {
+
+            result = await mensCollections.insertOne(product)
+
+        } else if (product.categoryId == 2) {
+
+            result = await womensCollections.insertOne(product)
+
+        } else if (product.categoryId == 3) {
+
+            result = await childsCollections.insertOne(product)
+
+        }
+
+        res.send(result)
+    })
+
 }
 run().catch(error => console.log(error))
 
