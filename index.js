@@ -34,6 +34,8 @@ async function run() {
     const childsCollections = client.db("puranClothes").collection("childClothes")
     const usersCollections = client.db("puranClothes").collection("users")
     const bookingsCollections = client.db("puranClothes").collection("bookings")
+    const reportedCollections = client.db("puranClothes").collection("reported")
+
 
     // collections end 
 
@@ -308,6 +310,13 @@ async function run() {
         const id = req.params.id;
         const filter = { _id: ObjectId(id) }
         const result = await bookingsCollections.deleteOne(filter)
+        res.send(result)
+    })
+
+    //reported items
+    app.post('/reportedItems', async (req, res) => {
+        const data = req.body;
+        const result = await reportedCollections.insertOne(data)
         res.send(result)
     })
 
