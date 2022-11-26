@@ -6,6 +6,8 @@ const app = express()
 const cors = require('cors');
 
 require('dotenv').config()
+const stripe = require("stripe")(process.env.STRIPE_SK_KEY);
+
 app.use(cors())
 app.use(express.json())
 
@@ -105,6 +107,8 @@ async function run() {
     app.get('/allUsers', async (req, res) => {
         res.send(await usersCollections.find({}).toArray())
     })
+
+
 
     //check role
     app.get('/role', async (req, res) => {
@@ -313,6 +317,14 @@ async function run() {
         res.send(result)
     })
 
+    //get specific booked product
+    app.get('/bookings/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) }
+        const result = await bookingsCollections.findOne(query)
+        res.send(result)
+    })
+
     //reported items
     app.post('/reportedItems', async (req, res) => {
         const data = req.body;
@@ -355,6 +367,27 @@ async function run() {
         res.send(result)
 
 
+    })
+
+
+    //payment
+    app.post("/create-payment-intent", async (req, res) => {
+        const booking = req.body;
+        console.log(booking);
+        const amount = booking.price * 100
+        console.log(amount);
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,
+            currency: "usd",
+            "payment_method_types": [
+                "card"
+            ]
+        });
+
+        res.send({
+            clientSecret: paymentIntent.client_secret,
+        });
     })
 
 
