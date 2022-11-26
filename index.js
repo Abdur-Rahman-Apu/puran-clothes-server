@@ -320,6 +320,43 @@ async function run() {
         res.send(result)
     })
 
+    //show reported items
+    app.get('/reportedItems', async (req, res) => {
+        res.send(await reportedCollections.find({}).toArray())
+    })
+
+    //delete reported items
+    app.delete('/deleteReportedItems', async (req, res) => {
+
+        const sellerEmail = req.query.sellerEmail;
+        const productName = req.query.productName;
+
+        const query = { sellerEmail, productName }
+
+        const deleteFromReport = await reportedCollections.deleteOne(query)
+
+        let result;
+
+
+        //check 
+        if (await mensCollections.findOne(query)) {
+
+            result = await mensCollections.deleteOne(query)
+
+        } else if (await womensCollections.findOne(query)) {
+
+            result = await womensCollections.deleteOne(query)
+
+        } else if (await childsCollections.findOne(query)) {
+
+            result = await childsCollections.deleteOne(query)
+
+        }
+        res.send(result)
+
+
+    })
+
 
 }
 run().catch(error => console.log(error))
