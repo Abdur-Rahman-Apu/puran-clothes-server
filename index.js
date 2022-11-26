@@ -33,6 +33,7 @@ async function run() {
     const womensCollections = client.db("puranClothes").collection("womenClothes")
     const childsCollections = client.db("puranClothes").collection("childClothes")
     const usersCollections = client.db("puranClothes").collection("users")
+    const bookingsCollections = client.db("puranClothes").collection("bookings")
 
     // collections end 
 
@@ -283,6 +284,13 @@ async function run() {
         const womenProductVerified = await womensCollections.updateMany({ sellerEmail: email }, updateDoc)
         const childProductVerified = await childsCollections.updateMany({ sellerEmail: email }, updateDoc)
 
+        res.send(result)
+    })
+
+    //book product
+    app.post('/bookings', async (req, res) => {
+        const data = req.body;
+        const result = await bookingsCollections.insertOne(data)
         res.send(result)
     })
 
