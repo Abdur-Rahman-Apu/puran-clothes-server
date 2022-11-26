@@ -295,6 +295,23 @@ async function run() {
     })
 
 
+    //get my book products
+    app.get('/bookings', async (req, res) => {
+        const email = req.query.email;
+        const query = { buyerEmail: email }
+        const result = await bookingsCollections.find(query).toArray()
+        res.send(result)
+    })
+
+    //delete booked product
+    app.delete('/bookings/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) }
+        const result = await bookingsCollections.deleteOne(filter)
+        res.send(result)
+    })
+
+
 }
 run().catch(error => console.log(error))
 
