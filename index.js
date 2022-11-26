@@ -262,12 +262,12 @@ async function run() {
     })
 
     //update verifyStatus
-    app.patch('/verifyStatus/:id', async (req, res) => {
-        const id = req.params.id;
-        console.log("update advertise", id);
+    app.patch('/verifyStatus', async (req, res) => {
+        const email = req.query.email;
+        console.log("update advertise", email);
 
 
-        const filter = { _id: ObjectId(id) }
+        const filter = { email: email }
 
         const updateDoc = {
             $set: {
@@ -278,6 +278,10 @@ async function run() {
         //check 
 
         const result = await usersCollections.updateOne(filter, updateDoc)
+
+        const menProductVerified = await mensCollections.updateMany({ sellerEmail: email }, updateDoc)
+        const womenProductVerified = await womensCollections.updateMany({ sellerEmail: email }, updateDoc)
+        const childProductVerified = await childsCollections.updateMany({ sellerEmail: email }, updateDoc)
 
         res.send(result)
     })
