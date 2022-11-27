@@ -37,6 +37,7 @@ async function run() {
     const usersCollections = client.db("puranClothes").collection("users")
     const bookingsCollections = client.db("puranClothes").collection("bookings")
     const reportedCollections = client.db("puranClothes").collection("reported")
+    const paymentCollections = client.db("puranClothes").collection("payments")
 
 
     // collections end 
@@ -79,9 +80,52 @@ async function run() {
     //delete a  users
     app.delete('/allusers/:id', async (req, res) => {
         const id = req.params.id;
-        console.log(id);
+
+        // user query 
         const query = { _id: ObjectId(id) }
-        console.log(query);
+
+
+        //delete buyers booking
+
+
+
+        // delete products of sellers
+        const search = await usersCollections.findOne(query)
+        console.log(search);
+        const email = search.email
+
+        let updateResult;
+        if (search.role == 'Seller') {
+
+            const filter = { sellerEmail: email }
+
+
+            if (await mensCollections.findOne(filter)) {
+
+                updateResult = await mensCollections.deleteMany(filter)
+
+            } else if (await womensCollections.findOne(filter)) {
+
+                updateResult = await womensCollections.deleteMany(filter)
+
+            } else if (await childsCollections.findOne(filter)) {
+
+                updateResult = await childsCollections.deleteMany(filter)
+
+            }
+
+        }
+
+        if (search.role == 'User') {
+            const filter = { buyerEmail: email }
+
+            updateResult = await bookingsCollections.deleteMany(filter)
+        }
+
+        //delete user
+
+
+
         const result = await usersCollections.deleteOne(query);
         res.send(result)
     })
@@ -347,8 +391,9 @@ async function run() {
 
         const deleteFromReport = await reportedCollections.deleteOne(query)
 
-        let result;
 
+
+        let result
 
         //check 
         if (await mensCollections.findOne(query)) {
@@ -388,6 +433,57 @@ async function run() {
         res.send({
             clientSecret: paymentIntent.client_secret,
         });
+    })
+
+    // store payment info 
+    app.post('/payments', async (req, res) => {
+
+        // store in payment collection 
+        const payment = req.body;
+
+        console.log(payment);
+        const result = await paymentCollections.insertOne(payment)
+
+
+        // update paid status 
+        const id = payment.bookingId;
+        const filter = { _id: ObjectId(id) }
+
+        let updateDoc = {
+            $set: {
+                paid: 1,
+            }
+        }
+
+        const updateResult = await bookingsCollections.updateOne(filter, updateDoc)
+
+        //update sale status
+        const pid = payment.productId;
+
+
+        const query = { _id: ObjectId(pid) }
+
+        updateDoc = {
+            $set: {
+                saleStatus: 'Sold'
+            }
+        }
+
+        let output;
+
+        if (await mensCollections.findOne(query)) {
+            output = await mensCollections.updateOne(query, updateDoc)
+
+        } else if (await womensCollections.findOne(query)) {
+
+            output = await womensCollections.updateOne(query, updateDoc)
+
+        } else if (await childsCollections.findOne(query)) {
+
+            output = await childsCollections.updateOne(query, updateDoc)
+        }
+
+        res.send(result)
     })
 
 
