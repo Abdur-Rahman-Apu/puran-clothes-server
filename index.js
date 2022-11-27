@@ -92,7 +92,7 @@ async function run() {
     })
 
     //find specific category
-    app.get('/category/:id', verifyJWT, async (req, res) => {
+    app.get('/category/:id', async (req, res) => {
         const id = req.params.id;
         const query = {}
 
