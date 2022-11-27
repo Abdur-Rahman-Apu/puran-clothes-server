@@ -5,7 +5,9 @@ const app = express()
 
 const cors = require('cors');
 
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
+
 const stripe = require("stripe")(process.env.STRIPE_SK_KEY);
 
 app.use(cors())
@@ -41,6 +43,22 @@ async function run() {
 
 
     // collections end 
+
+
+
+    //jwt
+    app.get('/jwt', async (req, res) => {
+        const email = req.query.email;
+        const query = { email: email }
+        const user = await usersCollections.findOne(query)
+        if (user) {
+            const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '24h' });
+            res.send({ accessToken: token })
+        } else {
+            res.status(403).send({ accessToken: '' })
+        }
+
+    })
 
     //find all categories
     app.get('/categories', async (req, res) => {
