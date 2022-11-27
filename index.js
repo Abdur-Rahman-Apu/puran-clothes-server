@@ -192,9 +192,9 @@ async function run() {
 
         const search = users.find(user => user.email === email)
         console.log("Search value", search);
-        console.log("compare", search.role == role);
 
-        if (search.role == role) {
+
+        if (search?.role == role) {
             res.send({ isFound: 'Yes' })
         } else {
             res.send({ isFound: 'No' })
@@ -276,24 +276,26 @@ async function run() {
     //find specific product of the seller
     app.get('/myproduct', verifyJWT, async (req, res) => {
         const email = req.query.email;
+        console.log('myproduct', email);
 
         let myProducts = []
 
         //mens
         const menProduct = await mensCollections.find({}).toArray()
-        const myMenProduct = menProduct.filter(product => product.sellerEmail == email)
+        const myMenProduct = menProduct.filter(product => product.sellerEmail === email)
 
         //womens
         const womenProduct = await womensCollections.find({}).toArray()
-        const myWomenProduct = womenProduct.filter(product => product.sellerEmail == email)
+        const myWomenProduct = womenProduct.filter(product => product.sellerEmail === email)
 
         //child
         const childProduct = await childsCollections.find({}).toArray()
-        const myChildProduct = childProduct.filter(product => product.sellerEmail == email)
+        const myChildProduct = childProduct.filter(product => product.sellerEmail === email)
 
 
         //combined all
-        myProducts = [...menProduct, ...womenProduct, ...childProduct]
+        myProducts = [...myMenProduct, ...myWomenProduct, ...myChildProduct]
+
         res.send(myProducts)
     })
 
