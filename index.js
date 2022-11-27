@@ -29,6 +29,8 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
+
+
 async function run() {
 
     //collections start
@@ -44,6 +46,25 @@ async function run() {
 
     // collections end 
 
+    function verifyJWT(req, res, next) {
+        console.log("token inside", req.headers.authorization);
+
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader) {
+            res.status(401).send('Unauthorized access')
+        }
+
+        const token = authHeader.split(' ')[1]
+
+        jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+            if (err) {
+                res.status(403).send({ message: 'forbidden' })
+            }
+            req.decoded = decoded
+            next()
+        })
+    }
 
 
     //jwt
@@ -364,8 +385,16 @@ async function run() {
 
 
     //get my book products
-    app.get('/bookings', async (req, res) => {
+    app.get('/bookings', verifyJWT, async (req, res) => {
         const email = req.query.email;
+
+        const decodedEmail = req.decoded?.email;
+
+        if (decodedEmail !== email) {
+            res.status(403).send({ message: 'forbidden' })
+        }
+
+
         const query = { buyerEmail: email }
         const result = await bookingsCollections.find(query).toArray()
         res.send(result)
