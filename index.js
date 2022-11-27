@@ -92,7 +92,7 @@ async function run() {
     })
 
     //find specific category
-    app.get('/category/:id', async (req, res) => {
+    app.get('/category/:id', verifyJWT, async (req, res) => {
         const id = req.params.id;
         const query = {}
 
@@ -185,7 +185,7 @@ async function run() {
     })
 
     //check users type to log in
-    app.get('/users', async (req, res) => {
+    app.get('/users', verifyJWT, async (req, res) => {
         const email = req.query.email;
         const role = req.query.role;
         const users = await usersCollections.find({}).toArray()
@@ -210,7 +210,7 @@ async function run() {
 
 
     //check role
-    app.get('/role', async (req, res) => {
+    app.get('/role', verifyJWT, async (req, res) => {
         const email = req.query.email;
         console.log(email);
         const allusers = await usersCollections.find({}).toArray()
@@ -228,7 +228,7 @@ async function run() {
     })
 
     //all buyers
-    app.get('/allBuyers', async (req, res) => {
+    app.get('/allBuyers', verifyJWT, async (req, res) => {
 
         const allusers = await usersCollections.find({}).toArray()
 
@@ -274,7 +274,7 @@ async function run() {
 
 
     //find specific product of the seller
-    app.get('/myproduct', async (req, res) => {
+    app.get('/myproduct', verifyJWT, async (req, res) => {
         const email = req.query.email;
 
         let myProducts = []
@@ -357,7 +357,7 @@ async function run() {
 
 
     //get all advertised products
-    app.get('/allAdvertiseProducts', async (req, res) => {
+    app.get('/allAdvertiseProducts', verifyJWT, async (req, res) => {
 
 
         const query = { advertise: 1 }
@@ -429,7 +429,7 @@ async function run() {
     })
 
     //get specific booked product
-    app.get('/bookings/:id', async (req, res) => {
+    app.get('/bookings/:id', verifyJWT, async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) }
         const result = await bookingsCollections.findOne(query)
@@ -444,7 +444,7 @@ async function run() {
     })
 
     //show reported items
-    app.get('/reportedItems', async (req, res) => {
+    app.get('/reportedItems', verifyJWT, async (req, res) => {
         res.send(await reportedCollections.find({}).toArray())
     })
 
