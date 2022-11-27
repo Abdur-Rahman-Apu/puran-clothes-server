@@ -53,17 +53,19 @@ async function run() {
 
         if (!authHeader) {
             res.status(401).send('Unauthorized access')
+        } else {
+            const token = authHeader.split(' ')[1]
+
+            jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+                if (err) {
+                    res.status(403).send({ message: 'forbidden' })
+                }
+                req.decoded = decoded
+                next()
+            })
         }
 
-        const token = authHeader.split(' ')[1]
 
-        jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
-            if (err) {
-                res.status(403).send({ message: 'forbidden' })
-            }
-            req.decoded = decoded
-            next()
-        })
     }
 
 
@@ -74,7 +76,7 @@ async function run() {
         const user = await usersCollections.findOne(query)
         if (user) {
             const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '24h' });
-            res.send({ accessToken: token })
+            return res.send({ accessToken: token })
         } else {
             res.status(403).send({ accessToken: '' })
         }
@@ -118,6 +120,19 @@ async function run() {
 
     //delete a  users
     app.delete('/allusers/:id', async (req, res) => {
+        // const decodedEmail = req.decoded.email;
+
+
+
+        // const filter = { email: decodedEmail }
+
+        // const user = await usersCollections.findOne(filter)
+
+
+        // if (!user?.isAdmin) {
+        //     return res.status(403).send({ message: 'Forbidden access' })
+        // }
+
         const id = req.params.id;
 
         // user query 
@@ -188,6 +203,7 @@ async function run() {
 
     //all users
     app.get('/allUsers', async (req, res) => {
+
         res.send(await usersCollections.find({}).toArray())
     })
 
@@ -213,6 +229,7 @@ async function run() {
 
     //all buyers
     app.get('/allBuyers', async (req, res) => {
+
         const allusers = await usersCollections.find({}).toArray()
 
         const buyers = allusers.filter(user => user.role === 'User' && !user.isAdmin)
@@ -221,6 +238,7 @@ async function run() {
 
     //all sellers
     app.get('/allSellers', async (req, res) => {
+
         const allusers = await usersCollections.find({}).toArray()
 
         const sellers = allusers.filter(user => user.role === 'Seller' && !user.isAdmin)
@@ -340,6 +358,8 @@ async function run() {
 
     //get all advertised products
     app.get('/allAdvertiseProducts', async (req, res) => {
+
+
         const query = { advertise: 1 }
 
         const menData = await mensCollections.find(query).toArray()
@@ -531,6 +551,12 @@ async function run() {
         }
 
         res.send(result)
+    })
+
+    //get all orders
+
+    app.get('/payments', verifyJWT, async (req, res) => {
+        res.send(await paymentCollections.find({}).toArray())
     })
 
 
