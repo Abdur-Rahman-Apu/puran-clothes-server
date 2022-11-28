@@ -237,7 +237,7 @@ async function run() {
     })
 
     //all sellers
-    app.get('/allSellers', async (req, res) => {
+    app.get('/allSellers', verifyJWT, async (req, res) => {
 
         const allusers = await usersCollections.find({}).toArray()
 
