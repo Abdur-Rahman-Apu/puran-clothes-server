@@ -185,7 +185,7 @@ async function run() {
     })
 
     //check users type to log in
-    app.get('/users', verifyJWT, async (req, res) => {
+    app.get('/users', async (req, res) => {
         const email = req.query.email;
         const role = req.query.role;
         const users = await usersCollections.find({}).toArray()
