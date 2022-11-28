@@ -327,7 +327,7 @@ async function run() {
 
 
     //update advertise value
-    app.patch('/updateAdvertise/:id', async (req, res) => {
+    app.patch('/updateAdvertise/:id', verifyJWT, async (req, res) => {
         const id = req.params.id;
         console.log("update advertise", id);
 
@@ -359,7 +359,7 @@ async function run() {
 
 
     //get all advertised products
-    app.get('/allAdvertiseProducts', verifyJWT, async (req, res) => {
+    app.get('/allAdvertiseProducts', async (req, res) => {
 
 
         const query = { advertise: 1 }
