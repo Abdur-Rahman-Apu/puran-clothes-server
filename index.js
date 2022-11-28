@@ -409,16 +409,17 @@ async function run() {
     //get my book products
     app.get('/bookings', verifyJWT, async (req, res) => {
         const email = req.query.email;
-
+        console.log("book email", email);
         const decodedEmail = req.decoded?.email;
 
         if (decodedEmail !== email) {
             res.status(403).send({ message: 'forbidden' })
         }
 
-
         const query = { buyerEmail: email }
+        console.log("Book query", query);
         const result = await bookingsCollections.find(query).toArray()
+        console.log("book result", result);
         res.send(result)
     })
 
@@ -551,6 +552,10 @@ async function run() {
 
             output = await childsCollections.updateOne(query, updateDoc)
         }
+
+        //delete others bookings
+        const deleteQuery = { productId: pid, paid: 0 }
+        const deleteOthersBooking = await bookingsCollections.deleteMany(deleteQuery)
 
         res.send(result)
     })
