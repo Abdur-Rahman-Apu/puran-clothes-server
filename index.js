@@ -210,7 +210,7 @@ async function run() {
 
 
     //check role
-    app.get('/role', verifyJWT, async (req, res) => {
+    app.get('/role', async (req, res) => {
         const email = req.query.email;
         console.log(email);
         const allusers = await usersCollections.find({}).toArray()
@@ -228,7 +228,7 @@ async function run() {
     })
 
     //all buyers
-    app.get('/allBuyers', verifyJWT, async (req, res) => {
+    app.get('/allBuyers', async (req, res) => {
 
         const allusers = await usersCollections.find({}).toArray()
 
@@ -237,7 +237,7 @@ async function run() {
     })
 
     //all sellers
-    app.get('/allSellers', verifyJWT, async (req, res) => {
+    app.get('/allSellers', async (req, res) => {
 
         const allusers = await usersCollections.find({}).toArray()
 
