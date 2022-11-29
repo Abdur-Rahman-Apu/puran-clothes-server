@@ -374,7 +374,7 @@ async function run() {
     })
 
     //update verifyStatus
-    app.patch('/verifyStatus', async (req, res) => {
+    app.put('/verifyStatus', async (req, res) => {
         const email = req.query.email;
         console.log("update advertise", email);
 
@@ -388,12 +388,13 @@ async function run() {
         };
 
         //check 
+        const search = { sellerEmail: email }
 
         const result = await usersCollections.updateOne(filter, updateDoc)
 
-        const menProductVerified = await mensCollections.updateMany({ sellerEmail: email }, updateDoc)
-        const womenProductVerified = await womensCollections.updateMany({ sellerEmail: email }, updateDoc)
-        const childProductVerified = await childsCollections.updateMany({ sellerEmail: email }, updateDoc)
+        const menProductVerified = await mensCollections.updateMany(search, updateDoc)
+        const womenProductVerified = await womensCollections.updateMany(search, updateDoc)
+        const childProductVerified = await childsCollections.updateMany(search, updateDoc)
 
         res.send(result)
     })
